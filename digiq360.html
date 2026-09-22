@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DigiQ360 — Digital Design Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0D0D11;
+    --ink-soft: #1A1A21;
+    --paper: #F3F4F2;
+    --paper-line: rgba(13,13,17,0.12);
+    --violet: #6E2BF0;
+    --magenta: #C81FDB;
+    --mint: #3BDDAE;
+    --mint-deep: #1E9E82;
+    --teal-ink: #0B4A40;
+    --line-dark: rgba(255,255,255,0.14);
+    --text-on-dark: #F3F4F2;
+    --text-on-dark-dim: rgba(243,244,242,0.66);
+    box-sizing: border-box;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #EFF1EE;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #EFF1EE;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(84px + env(safe-area-inset-top, 0px));
+  }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--text-on-dark);
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Space Grotesk', 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  a { color: inherit; }
+  img, svg { max-width: 100%; display: block; }
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-left: clamp(20px, 5vw, 64px);
+    padding-right: clamp(20px, 5vw, 64px);
+  }
+  .scrollx { overflow-x: auto; }
+
+  /* ---------- Logo mark ---------- */
+  .mark {
+    width: 30px;
+    height: 30px;
+    flex: none;
+  }
+  .wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+  .wordmark sup {
+    font-size: 0.5em;
+    font-weight: 600;
+    opacity: 0.7;
+    top: -0.9em;
+  }
+
+  /* ---------- Nav ---------- */
+  header.site {
+    position: sticky;
+    top: 0;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 40;
+    background: rgba(13,13,17,0.82);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-dark);
+  }
+  .navrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: 76px;
+  }
+  .navleft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  nav.links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 0.92rem;
+  }
+  nav.links a {
+    text-decoration: none;
+    color: var(--text-on-dark-dim);
+    transition: color .15s ease;
+    white-space: nowrap;
+  }
+  nav.links a:hover, nav.links a:focus-visible { color: var(--text-on-dark); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: linear-gradient(100deg, var(--violet), var(--magenta));
+    color: #fff;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost {
+    border-color: var(--line-dark);
+    color: var(--text-on-dark);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.4); }
+  .btn:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 3px;
+  }
+  .navcta { display: none; }
+  @media (min-width: 720px) { .navcta { display: inline-flex; } }
+  .navlinks-wrap { display: none; }
+  @media (min-width: 860px) { .navlinks-wrap { display: flex; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    padding: 68px 0 0;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    align-items: center;
+    padding-bottom: 56px;
+  }
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: 1.15fr 0.85fr; gap: 32px; }
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.1rem);
+    line-height: 1.04;
+  }
+  .hero-lead {
+    margin-top: 24px;
+    max-width: 46ch;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--text-on-dark-dim);
+  }
+  .hero-ctas {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .hero-art {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-width: 420px;
+    justify-self: center;
+    width: 100%;
+  }
+
+  /* feature strip */
+  .strip {
+    border-top: 1px solid var(--line-dark);
+  }
+  .strip-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 44px 0;
+  }
+  @media (min-width: 780px) {
+    .strip-inner {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .strip-inner > div {
+      padding: 0 32px;
+      border-left: 1px solid var(--line-dark);
+    }
+    .strip-inner > div:first-child { border-left: none; padding-left: 0; }
+  }
+  .strip-inner h3 {
+    font-size: 1.02rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .strip-inner p {
+    margin: 10px 0 0;
+    font-size: 0.92rem;
+    color: var(--text-on-dark-dim);
+    line-height: 1.55;
+    max-width: 32ch;
+  }
+  .icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    stroke: var(--mint);
+    fill: none;
+    stroke-width: 1.6;
+  }
+
+  /* ---------- Services ---------- */
+  .services {
+    background: linear-gradient(160deg, #bff3e6 0%, var(--mint) 46%, #29c39a 100%);
+    color: var(--teal-ink);
+    padding: 96px 0 104px;
+  }
+  .services-head {
+    max-width: 54ch;
+  }
+  .services-head h2 {
+    font-size: clamp(2rem, 4.2vw, 2.7rem);
+    color: #06231d;
+  }
+  .services-head p {
+    margin-top: 18px;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: rgba(6,35,29,0.78);
+  }
+  .service-grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+  @media (min-width: 760px) {
+    .service-grid { grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  }
+  .service-col .icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: rgba(6,35,29,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .service-col .icon-box svg {
+    width: 22px;
+    height: 22px;
+    stroke: #06231d;
+    fill: none;
+    stroke-width: 1.6;
+  }
+  .service-col h3 {
+    font-size: 1.18rem;
+    color: #06231d;
+  }
+  .service-col ul {
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .service-col li {
+    font-size: 0.95rem;
+    color: rgba(6,35,29,0.82);
+    padding-left: 18px;
+    position: relative;
+  }
+  .service-col li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #06231d;
+    opacity: 0.5;
+  }
+
+  /* ---------- CTA / contact ---------- */
+  .contact {
+    background: var(--ink);
+    padding: 92px 0 64px;
+    border-top: 1px solid var(--line-dark);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  @media (min-width: 860px) {
+    .contact-grid { grid-template-columns: 1.2fr 1fr; gap: 40px; }
+  }
+  .contact h2 {
+    font-size: clamp(2rem, 4.4vw, 2.9rem);
+    line-height: 1.08;
+    max-width: 14ch;
+  }
+  .contact-copy {
+    margin-top: 20px;
+    color: var(--text-on-dark-dim);
+    max-width: 42ch;
+    line-height: 1.6;
+  }
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .contact-list li {
+    border-top: 1px solid var(--line-dark);
+    padding: 18px 0;
+  }
+  .contact-list li:last-child { border-bottom: 1px solid var(--line-dark); }
+  .contact-list a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.05rem;
+  }
+  .contact-list .icon { stroke: var(--mint); }
+  .contact-list span.label {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--text-on-dark-dim);
+    margin-bottom: 2px;
+  }
+
+  footer.site {
+    padding: 30px 0 calc(30px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    color: var(--text-on-dark-dim);
+    font-size: 0.85rem;
+  }
+  footer.site .navleft { gap: 10px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap navrow">
+    <div class="navleft">
+      <svg class="mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="markGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6E2BF0"/>
+            <stop offset="1" stop-color="#C81FDB"/>
+          </linearGradient>
+        </defs>
+        <path d="M6 4 L34 20 L6 36 Z" fill="url(#markGrad)"/>
+      </svg>
+      <span class="wordmark">DIGIQ<sup>360</sup></span>
+    </div>
+    <nav class="links navlinks-wrap">
+      <a href="#work">Services</a>
+      <a href="#approach">Approach</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-primary navcta" href="mailto:digiq360@gmail.com">Start a project</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Design that gets<br>noticed. Copy that<br>gets read.</h1>
+        <p class="hero-lead">DigiQ360 is a digital design studio for small brands and growing teams — logos, flyers, packaging, social content and copy, handled by one team instead of three agencies.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="mailto:digiq360@gmail.com">Start a project</a>
+          <a class="btn btn-ghost" href="#work">See what we do</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="heroGrad1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#6E2BF0"/>
+              <stop offset="1" stop-color="#C81FDB"/>
+            </linearGradient>
+            <linearGradient id="heroGrad2" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#1E9E82"/>
+              <stop offset="1" stop-color="#3BDDAE"/>
+            </linearGradient>
+          </defs>
+          <circle cx="200" cy="200" r="168" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+          <path d="M120 96 L308 200 L120 304 Z" fill="url(#heroGrad1)" opacity="0.95"/>
+          <path d="M70 230 L214 150 L214 310 Z" fill="url(#heroGrad2)" opacity="0.85"/>
+          <circle cx="96" cy="112" r="5" fill="#3BDDAE"/>
+          <circle cx="322" cy="150" r="4" fill="#C81FDB"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="wrap strip-inner">
+        <div>
+          <h3><svg class="icon" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-4 10.4c.6.55 1 1.36 1 2.2V16h6v-1.4c0-.84.4-1.65 1-2.2A6 6 0 0 0 12 2Z"/></svg>Unique solutions</h3>
+          <p>Every brief gets a strategy built for it — not a template pulled off the shelf.</p>
+        </div>
+        <div>
+          <h3><svg class="icon" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M12 6v6l4 2"/></svg>24/7 support</h3>
+          <p>Need a change? Call any time — someone from the team will pick up.</p>
+        </div>
+        <div>
+          <h3><svg class="icon" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg>Fast delivery</h3>
+          <p>Deadlines are promises here. We build in time to get it right, not just fast.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services" id="work">
+    <div class="wrap">
+      <div class="services-head">
+        <h2>What we do</h2>
+        <p>Three disciplines, one team — so your brand looks and sounds like one thing everywhere it shows up.</p>
+      </div>
+
+      <div class="service-grid">
+        <div class="service-col">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          </div>
+          <h3>Graphic design</h3>
+          <ul>
+            <li>Logo design</li>
+            <li>Flyer design</li>
+            <li>Package design</li>
+          </ul>
+        </div>
+        <div class="service-col">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+          </div>
+          <h3>Social media</h3>
+          <ul>
+            <li>Post design</li>
+            <li>Ad creative</li>
+            <li>Social media strategy</li>
+          </ul>
+        </div>
+        <div class="service-col">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6"/></svg>
+          </div>
+          <h3>Copywriting</h3>
+          <ul>
+            <li>Email marketing</li>
+            <li>Blog writing</li>
+            <li>Product copy</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <h2 id="approach">We'll brighten<br>your future</h2>
+        <p class="contact-copy">Tell us what you're building and we'll come back with a plan — no bloated proposal decks, just the work.</p>
+      </div>
+      <ul class="contact-list">
+        <li>
+          <a href="mailto:digiq360@gmail.com">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
+            <span><span class="label">Email</span>digiq360@gmail.com</span>
+          </a>
+        </li>
+        <li>
+          <a href="tel:0705984324">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.99.36 1.96.7 2.9a2 2 0 0 1-.45 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.45c.94.34 1.91.57 2.9.7A2 2 0 0 1 22 16.9Z"/></svg>
+            <span><span class="label">Phone</span>070-598-4324</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.digiq360.com" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/></svg>
+            <span><span class="label">Web</span>www.digiq360.com</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;width:100%;">
+    <div class="navleft">
+      <svg class="mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:20px;height:20px;">
+        <path d="M6 4 L34 20 L6 36 Z" fill="url(#markGrad)"/>
+      </svg>
+      <span>© 2026 DigiQ360. Digital design mastery.</span>
+    </div>
+    <span>digiq360@gmail.com</span>
+  </div>
+</footer>
+
+</body>
+</html>
