@@ -1,5 +1,5 @@
 <div align="center">
-<img src="logo.png" alt="FUTURA Logo" width="1000"/>
+<img src="logo.png" alt="FUTURA Logo" width="1500"/>
 </div>
 
 # DIGIQ 360 — Company Website Reimagined
