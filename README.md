@@ -1,3 +1,7 @@
+<div align="center">
+<img src="logo.png" alt="FUTURA Logo" width="1000"/>
+</div>
+
 # DIGIQ 360 — Company Website Reimagined
 
 A modern reimagining of the DIGIQ 360 company website, created with a focus on clean presentation, responsive design, and a polished digital experience.
